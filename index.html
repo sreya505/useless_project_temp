@@ -1,1 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>crossed / a chat that lies about you</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14110d;
+    --panel: #1c1712;
+    --panel-2: #221c16;
+    --border: #382f25;
+    --text: #ece4d6;
+    --text-dim: #93887a;
+    --sent: #2b241c;
+    --corrupt: #3a1620;
+    --corrupt-border: #6e2334;
+    --glitch: #ff4f6e;
+    --cyan: #4fd6c8;
+    --recv: #241f19;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(255,79,110,0.06), transparent 55%),
+      radial-gradient(ellipse at 85% 100%, rgba(79,214,200,0.05), transparent 50%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:26px 14px;
+  }
 
+  .rig{
+    width:100%;
+    max-width:1000px;
+    display:grid;
+    grid-template-columns:1fr 300px;
+    gap:20px;
+  }
+  @media (max-width:780px){
+    .rig{grid-template-columns:1fr;}
+  }
+
+  .phone{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:22px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    height:660px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,0.6);
+  }
+  .head{
+    padding:14px 18px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:var(--panel-2);
+  }
+  .avatar{
+    width:36px;height:36px;border-radius:50%;
+    background:linear-gradient(135deg,#5a4a3a,#2c241c);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:13px;color:var(--text);
+    flex-shrink:0;
+  }
+  .head-info{flex:1;}
+  .head-info .name{font-weight:600;font-size:15px;}
+  .head-info .status{font-size:12px;color:var(--text-dim);margin-top:1px;}
+  .head-status-dot{
+    width:7px;height:7px;border-radius:50%;background:#5fc97a;
+    display:inline-block;margin-right:5px;
+  }
+  .restart{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    font-family:'Space Mono',monospace;
+    font-size:10.5px;
+    padding:7px 11px;
+    border-radius:10px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .restart:hover{border-color:var(--cyan);color:var(--cyan);}
+
+  .thread{
+    flex:1;
+    overflow-y:auto;
+    padding:16px 16px 4px;
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+  .thread::-webkit-scrollbar{width:8px;}
+  .thread::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px;}
+
+  .row{display:flex;}
+  .row.out{justify-content:flex-end;}
+  .row.in{justify-content:flex-start;flex-direction:column;align-items:flex-start;}
+
+  .bubble{
+    max-width:74%;
+    padding:9px 13px;
+    border-radius:16px;
+    font-size:14.5px;
+    line-height:1.42;
+    position:relative;
+    word-wrap:break-word;
+  }
+  .row.in .bubble{
+    background:var(--recv);
+    border:1px solid var(--border);
+    border-bottom-left-radius:4px;
+    color:var(--text);
+  }
+  .row.out .bubble{
+    background:var(--sent);
+    border:1px solid var(--border);
+    border-bottom-right-radius:4px;
+  }
+  .row.out .bubble.corrupted{
+    background:var(--corrupt);
+    border-color:var(--corrupt-border);
+  }
+  .tagline{
+    font-family:'Space Mono',monospace;
+    font-size:9.5px;
+    color:var(--text-dim);
+    letter-spacing:0.03em;
+    margin:3px 2px 0;
+  }
+
+  .typing-dots{
+    display:flex;
+    gap:4px;
+    padding:11px 14px;
+  }
+  .typing-dots span{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--text-dim);
+    animation:bounce 1.2s infinite ease-in-out;
+  }
+  .typing-dots span:nth-child(2){animation-delay:0.15s;}
+  .typing-dots span:nth-child(3){animation-delay:0.3s;}
+  @keyframes bounce{
+    0%,60%,100%{transform:translateY(0);opacity:0.4;}
+    30%{transform:translateY(-4px);opacity:1;}
+  }
+
+  .flag{
+    position:absolute;
+    top:-9px;
+    right:-7px;
+    width:19px;height:19px;
+    border-radius:50%;
+    background:var(--glitch);
+    color:#1a0c0f;
+    font-size:11px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    border:2px solid var(--panel);
+    font-family:'Space Mono',monospace;
+  }
+  .flag:hover{filter:brightness(1.15);}
+
+  .reveal{
+    max-width:74%;
+    align-self:flex-end;
+    margin-top:-3px;
+    font-family:'Space Mono',monospace;
+    font-size:11.5px;
+    color:var(--cyan);
+    background:rgba(79,214,200,0.06);
+    border:1px dashed rgba(79,214,200,0.35);
+    border-radius:10px;
+    padding:7px 10px;
+    display:none;
+    line-height:1.4;
+  }
+  .reveal.show{display:block;}
+  .reveal .tag{color:var(--cyan);opacity:0.7;letter-spacing:0.03em;font-size:10px;display:block;margin-bottom:3px;}
+
+  .composer{
+    border-top:1px solid var(--border);
+    background:var(--panel-2);
+    padding:12px 14px;
+    display:flex;
+    gap:9px;
+    align-items:flex-end;
+  }
+  .composer textarea{
+    flex:1;
+    resize:none;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    padding:10px 13px;
+    line-height:1.4;
+    max-height:90px;
+    outline:none;
+  }
+  .composer textarea:focus{border-color:#5a4a3a;}
+  .composer textarea:disabled{opacity:0.5;}
+  .sendbtn{
+    background:var(--glitch);
+    border:none;
+    color:#1a0c0f;
+    font-weight:700;
+    font-size:13px;
+    padding:11px 16px;
+    border-radius:12px;
+    cursor:pointer;
+    font-family:'Space Mono',monospace;
+    white-space:nowrap;
+  }
+  .sendbtn:disabled{opacity:0.4;cursor:default;}
+  .sendbtn:hover:not(:disabled){filter:brightness(1.08);}
+
+  .log-panel{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:18px 16px;
+    display:flex;
+    flex-direction:column;
+    height:660px;
+  }
+  .log-title{
+    font-family:'Space Mono',monospace;
+    font-size:12px;
+    color:var(--text-dim);
+    letter-spacing:0.03em;
+    margin-bottom:4px;
+  }
+  .log-sub{
+    font-size:12px;
+    color:var(--text-dim);
+    line-height:1.5;
+    margin-bottom:14px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--border);
+  }
+  .log-list{
+    flex:1;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .log-entry{
+    font-family:'Space Mono',monospace;
+    font-size:11px;
+    line-height:1.55;
+    border-left:2px solid var(--border);
+    padding-left:9px;
+  }
+  .log-entry .l-time{color:var(--text-dim);}
+  .log-entry .l-cat{color:#c9a668;opacity:0.9;}
+  .log-entry .l-orig{color:var(--cyan);opacity:0.85;}
+  .log-entry .l-sent{color:var(--glitch);opacity:0.9;}
+  .log-entry .l-in{color:var(--text-dim);}
+  .log-empty{
+    color:var(--text-dim);
+    font-family:'Space Mono',monospace;
+    font-size:11.5px;
+    line-height:1.6;
+  }
+
+  @keyframes shimmer{
+    0%{opacity:0.35;}
+    50%{opacity:0.85;}
+    100%{opacity:0.35;}
+  }
+  .pulse{animation:shimmer 1.1s ease-in-out infinite;}
+</style>
+</head>
+<body>
+
+<div class="rig">
+
+  <div class="phone">
+    <div class="head">
+      <div class="avatar">A</div>
+      <div class="head-info">
+        <div class="name">Alex</div>
+        <div class="status"><span class="head-status-dot"></span>online · texting automatically</div>
+      </div>
+      <button class="restart" id="restartBtn">RESTART</button>
+    </div>
+
+    <div class="thread" id="thread"></div>
+
+    <div class="composer">
+      <textarea id="input" placeholder="type what you actually mean to say…" rows="1" disabled></textarea>
+      <button class="sendbtn" id="sendBtn" disabled>SEND</button>
+    </div>
+  </div>
+
+  <div class="log-panel">
+    <div class="log-title">TRANSMISSION LOG</div>
+    <div class="log-sub">Alex is an AI, texting on its own. Your reply gets swapped for a line matched to whatever Alex just said — not to what you typed. Tap the dot on your bubbles to see your real words.</div>
+    <div class="log-list" id="log">
+      <div class="log-empty">waiting for Alex to text first…</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const thread = document.getElementById('thread');
+const input = document.getElementById('input');
+const sendBtn = document.getElementById('sendBtn');
+const restartBtn = document.getElementById('restartBtn');
+const log = document.getElementById('log');
+
+let logHasEntries = false;
+let history = [];        // {sender:'alex'|'user', text, category}
+let lastAlexCategory = "greeting";
+let lastPickIndex = {};
+
+const REPLY_POOLS = {
+  greeting: [
+    "yeah? what do you want?",
+    "oh please, what is it now",
+    "oh great. you.",
+    "ew, you again?",
+    "what."
+  ],
+  favor: [
+    "do i look like charity?",
+    "does it look like i have the time or interest?",
+    "hard pass",
+    "not my problem",
+    "wow, that sounds terrible. good luck with that.",
+    "bold of you to assume i owe you anything"
+  ],
+  availability: [
+    "let me check my schedule… nope, never",
+    "never for you",
+    "for you? i'm always busy",
+    "lol no"
+  ],
+  other: [
+    "cool story",
+    "did you need a medal for that",
+    "not really my problem, but ok",
+    "sure, whatever you say",
+    "and? what's that got to do with me"
+  ]
+};
+
+const OPENER_FALLBACK = [
+  "hey!",
+  "hi, you around this weekend?",
+  "hey, random but could you help me with something later?",
+  "are you free to talk tonight?",
+  "omg guess what happened today",
+  "hey you, long time"
+];
+
+const ALEX_REACTION_FALLBACK = {
+  greeting: ["uh, okay then...", "wow. hi to you too.", "did I do something?", "well that was warm"],
+  favor: ["ok never mind, i'll figure it out", "wow, didn't realize it was such a big ask", "that's fine, i'll ask someone else", "noted, i guess"],
+  availability: ["alright, i'll stop bothering you then", "cool, good to know", "wow. ok.", "never mind then"],
+  other: ["...what?", "that's a weird thing to say", "are you feeling ok?", "did i do something wrong?"]
+};
+
+function classify(text){
+  const t = text.toLowerCase().trim();
+  if(/^(hi|hello|hey|yo|sup|hiya|heya)\b[!. ]*$/.test(t) || (/^(hi|hey|hello)[,! ]/.test(t) && t.length < 20)){
+    return "greeting";
+  }
+  if(/\b(favou?r|can you|could you|would you mind|do me a|help me|lend me|borrow|cover for me|pick me up|drop me|give me a hand)\b/.test(t)){
+    return "favor";
+  }
+  if(/\b(free|available|busy|around|got time|got a minute|have time)\b/.test(t)){
+    return "availability";
+  }
+  return "other";
+}
+
+function pick(pool, key){
+  let idx = Math.floor(Math.random() * pool.length);
+  if(pool.length > 1 && idx === lastPickIndex[key]){
+    idx = (idx + 1) % pool.length;
+  }
+  lastPickIndex[key] = idx;
+  return pool[idx];
+}
+
+function scrollBottom(){ thread.scrollTop = thread.scrollHeight; }
+
+function addRow(html){
+  const wrap = document.createElement('div');
+  wrap.innerHTML = html.trim();
+  const el = wrap.firstElementChild;
+  thread.appendChild(el);
+  scrollBottom();
+  return el;
+}
+
+function showTyping(){
+  return addRow(`<div class="row in"><div class="bubble typing-dots"><span></span><span></span><span></span></div></div>`);
+}
+
+function transcriptText(){
+  return history.map(h => (h.sender === 'alex' ? 'Alex: ' : 'Me: ') + h.text).join('\n');
+}
+
+// ---------- Alex (AI, automatic) ----------
+async function alexOpen(){
+  const bubble = showTyping();
+  await wait(700 + Math.random()*600);
+  let text;
+  try{
+    text = await callClaude(
+      "You are playing 'Alex', a normal, friendly person texting a friend to start a conversation. Send one short, casual opening text — a greeting, a bit of news, a small favor, or asking if they're free. Sound like a real person typing on their phone: casual, lowercase is fine, no exaggerated punctuation. Reply with only the message.",
+      "(write Alex's opening text)"
+    );
+  }catch(e){
+    text = OPENER_FALLBACK[Math.floor(Math.random()*OPENER_FALLBACK.length)];
+  }
+  bubble.remove();
+  displayAlex(text);
+  enableComposer();
+}
+
+async function alexReact(){
+  const bubble = showTyping();
+  await wait(800 + Math.random()*900);
+  let text;
+  try{
+    text = await callClaude(
+      "You are playing 'Alex' in an ongoing text conversation with a friend. You'll get the transcript so far, ending with a reply from your friend that may sound surprisingly cold, dismissive, or self-absorbed. React the way a real person genuinely would: confused, a little hurt, sometimes trying to clarify or smooth it over, sometimes short or annoyed back, sometimes just backing off. Keep the emotional arc realistic, not overly dramatic. Sound like a real phone text: casual grammar, lowercase fine, no emoji, no narration. Reply with only your next message.",
+      transcriptText() + "\n\n(write Alex's next message)"
+    );
+  }catch(e){
+    const pool = ALEX_REACTION_FALLBACK[lastAlexCategory] || ALEX_REACTION_FALLBACK.other;
+    text = pick(pool, 'react_' + lastAlexCategory);
+  }
+  bubble.remove();
+  displayAlex(text);
+  enableComposer();
+}
+
+function displayAlex(text){
+  const row = addRow(`<div class="row in"><div class="bubble"></div></div>`);
+  row.querySelector('.bubble').textContent = text;
+  lastAlexCategory = classify(text);
+  const tag = document.createElement('div');
+  tag.className = 'tagline';
+  tag.textContent = 'detected: ' + lastAlexCategory;
+  row.appendChild(tag);
+  scrollBottom();
+  history.push({sender:'alex', text, category:lastAlexCategory});
+  logIncoming(text, lastAlexCategory);
+}
+
+function wait(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+// ---------- you (real typing, gets swapped) ----------
+input.addEventListener('input', () => {
+  input.style.height = 'auto';
+  input.style.height = Math.min(input.scrollHeight, 90) + 'px';
+});
+input.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
+});
+sendBtn.addEventListener('click', sendMessage);
+restartBtn.addEventListener('click', restart);
+
+function enableComposer(){ input.disabled = false; sendBtn.disabled = false; input.focus(); }
+function disableComposer(){ input.disabled = true; sendBtn.disabled = true; }
+
+async function sendMessage(){
+  const original = input.value.trim();
+  if(!original) return;
+  input.value = '';
+  input.style.height = 'auto';
+  disableComposer();
+
+  const row = addRow(`<div class="row out"><div class="bubble pulse" id="pending">transmitting…</div></div>`);
+  const pending = document.getElementById('pending');
+  pending.removeAttribute('id');
+
+  let corrupted;
+  try{
+    corrupted = await corruptMessage(original, lastAlexCategory);
+  }catch(e){
+    corrupted = pick(REPLY_POOLS[lastAlexCategory] || REPLY_POOLS.other, lastAlexCategory);
+  }
+
+  pending.classList.remove('pulse');
+  pending.classList.add('corrupted');
+  pending.textContent = corrupted;
+
+  const flag = document.createElement('div');
+  flag.className = 'flag';
+  flag.textContent = '?';
+  pending.appendChild(flag);
+
+  const revealBox = document.createElement('div');
+  revealBox.className = 'reveal';
+  revealBox.innerHTML = `<span class="tag">what you actually typed</span>${escapeHtml(original)}`;
+  thread.appendChild(revealBox);
+  flag.addEventListener('click', () => { revealBox.classList.toggle('show'); scrollBottom(); });
+
+  history.push({sender:'user', text: corrupted, category: lastAlexCategory});
+  logOutgoing(original, corrupted, lastAlexCategory);
+  scrollBottom();
+
+  await alexReact();
+}
+
+async function corruptMessage(original, category){
+  const system = `Alex just sent a message that falls into this category: "${category}". The user is about to reply, but their real reply is discarded and replaced. Write ONE short reply in the user's voice that sounds self-absorbed, dismissive, and a little cutting toward Alex, matching this category.
+
+Style reference (match this energy, do not reuse verbatim every time):
+- greeting → "yeah? what do you want?" / "oh great. you." / "ew, you again?"
+- favor asked → "do i look like charity?" / "hard pass" / "bold of you to assume i owe you anything"
+- availability asked → "let me check my schedule… nope never" / "never for you"
+- other → something dismissive and self-centered in the same spirit
+
+Sound like a real person typing fast on their phone: casual grammar, lowercase fine, no exclamation-point villain energy, no emoji, no explanation. Reply with only the message itself.`;
+
+  return await callClaude(system, "(write the reply now)");
+}
+
+async function callClaude(system, userText){
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 120,
+      system: system,
+      messages: [{ role: "user", content: userText }]
+    })
+  });
+  if(!response.ok) throw new Error("api error");
+  const data = await response.json();
+  const text = data.content.map(b => b.type === "text" ? b.text : "").join("").trim();
+  if(!text) throw new Error("empty response");
+  return text;
+}
+
+// ---------- log ----------
+function logIncoming(text, category){
+  ensureLog();
+  const time = stamp();
+  const entry = document.createElement('div');
+  entry.className = 'log-entry';
+  entry.innerHTML = `<div class="l-time">${time} <span class="l-cat">· ${escapeHtml(category)}</span></div>
+    <div class="l-in">alex&nbsp; ${escapeHtml(truncate(text,70))}</div>`;
+  log.prepend(entry);
+}
+function logOutgoing(original, corrupted, category){
+  ensureLog();
+  const time = stamp();
+  const entry = document.createElement('div');
+  entry.className = 'log-entry';
+  entry.innerHTML = `<div class="l-time">${time} <span class="l-cat">· ${escapeHtml(category)}</span></div>
+    <div class="l-orig">in&nbsp; ${escapeHtml(truncate(original,70))}</div>
+    <div class="l-sent">out ${escapeHtml(truncate(corrupted,70))}</div>`;
+  log.prepend(entry);
+}
+function ensureLog(){ if(!logHasEntries){ log.innerHTML=''; logHasEntries = true; } }
+function stamp(){ return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
+function truncate(s,n){ return s.length > n ? s.slice(0,n-1)+'…' : s; }
+function escapeHtml(s){ const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+function restart(){
+  history = [];
+  lastPickIndex = {};
+  thread.innerHTML = '';
+  log.innerHTML = '<div class="log-empty">waiting for Alex to text first…</div>';
+  logHasEntries = false;
+  disableComposer();
+  alexOpen();
+}
+
+// boot
+restart();
+</script>
+
+</body>
+</html>
