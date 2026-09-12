@@ -10,26 +10,25 @@
 
 
 ### Team Members
-- Team Lead: [Name] - [College]
-- Member 2: [Name] - [College]
-- Member 3: [Name] - [College]
+- Team Lead:  - [College]
+- Member 2: Sreya.S- Ahalia school of engineering and technology 
+- Member 3: Mounika.S - Ahalia school of engineering and technology
 
 ### Project Description
-[2-3 lines about what your project does]
+A text editor or chat client that secretly alters your text right before transmission to actively pick a fight with the recipient
 
 ### The Problem (that doesn't exist)
-[What ridiculous problem are you solving?]
-
+A healthy relationship
 ### The Solution (that nobody asked for)
 [How are you solving it? Keep it fun!]
 
 ## Technical Details
 ### Technologies/Components Used
 For Software:
-- [Languages used]
+-HTML
 - [Frameworks used]
 - [Libraries used]
-- [Tools used]
+- ChatGPT,Claude
 
 For Hardware:
 - [List main components]
