@@ -2,64 +2,64 @@
 
 
 
-# [Project Name] 🎯
+# Passive Aggressive Messenger (PAM)🎯
 
 
 ## Basic Details
-### Team Name: [Name]
+### Team Name: [Mounika and Sreya]
 
 
-### Team Members
-- Team Lead: [Name] - [College]
-- Member 2: [Name] - [College]
-- Member 3: [Name] - [College]
+### Team Members.
+- Team Lead: [Name] - [college]
+- Member 2: Mounika.S -Ahalia school of engineering and technology
+- Member 3: Sreya.S - Ahalia school of engineering and technology
+]
 
 ### Project Description
-[2-3 lines about what your project does]
-
+A text editor or chat client that secretly alters your text right before transmission to actively pick a fight with the recipient.
 ### The Problem (that doesn't exist)
-[What ridiculous problem are you solving?]
-
-### The Solution (that nobody asked for)
-[How are you solving it? Keep it fun!]
-
+Modern chat clients are boringly peaceful.
+### The Solution (that nobody asked for)[]
+A HTML-based text editor that secretly hijacks your outgoing messages to violently escalate trivial conversations.
 ## Technical Details
 ### Technologies/Components Used
 For Software:
-- [Languages used]
+- HTML,JavaScript,CSS
 - [Frameworks used]
 - [Libraries used]
-- [Tools used]
+  ChatGPT,Claude
 
 For Hardware:
-- [List main components]
-- [List specifications]
-- [List tools required]
-
+no hardware requirements needed
 ### Implementation
 For Software:
 # Installation
-[commands]
+No installation required
 
 # Run
-[commands]
+Just open PAM stored in documents
 
 ### Project Documentation
 For Software:
 
 # Screenshots (Add at least 3)
-![Screenshot1](Add screenshot 1 here with proper name)
-*Add caption explaining what this shows*
 
-![Screenshot2](Add screenshot 2 here with proper name)
-*Add caption explaining what this shows*
+<img width="1196" height="784" alt="Screenshot from 2026-09-12 08-53-29" src="https://github.com/user-attachments/assets/f13e122b-6be3-40f5-a056-c070263e1cd0" /> [Caption:Chat interface featuring Alex , an AI texting automatically.The interface highlights Transmission Log mechanic,showing how a user's typed input (eg:"yeah sure") is swapped during transmission for a different output (eg:"hard pass")] 
 
-![Screenshot3](Add screenshot 3 here with proper name)
-*Add caption explaining what this shows*
+<img width="1196" height="784" alt="Screenshot from 2026-09-12 09-02-56" src="https://github.com/user-attachments/assets/0fcb8799-c87b-428a-ab1a-e50f2eec7bed" />[Caption:A screenshot showing a user's typed input ("sorry I'm a bit busy") being automatically altered to a contrasting message ("for you? I'm always busy") in the chatlog with Alex.]
+
+<img width="1196" height="784" alt="Screenshot from 2026-09-12 09-09-36" src="https://github.com/user-attachments/assets/82b93539-ef76-4e7b-af52-48caa3a62d85" /> [Caption:"In-game chat log with Alex , showing how player text is swapped and how original inputs can be revealed via a dot tap."]
 
 # Diagrams
-![Workflow](Add your workflow/architecture diagram here)
-*Add caption explaining your workflow*
+
+<img width="349" height="583" alt="Screenshot from 2026-09-12 08-28-57" src="https://github.com/user-attachments/assets/5d2c9720-7944-4919-90db-466ab636b07f" /> [This diagram outlines a man-in-the-middle (MitM) text sabotage mechanism designed to artificially escalate interpersonal conflict by secretly altering the tone of communications.
+
+* *User types message:* The sender composes a normal, friendly, or neutral text message.
+* *Silent interception:* A background process hooks into the messaging application's send function, intercepting the text entirely unseen by the user.
+* *Rewrites tone:* The interceptor alters the text, injecting sarcasm, blame, passive-aggressive jabs, or hostile phrasing.
+* *Sends altered text:* The modified, malicious text is transmitted to the target. The original sender remains completely unaware that their message was changed.
+* *Recipient reacts:* The recipient receives the altered message, feels mocked or attacked, and replies with a hostile or defensive response.
+* *Conflict escalates:* The cycle repeats with each subsequent reply, trapping both parties in an escalating loop of artificial hostility.]
 
 For Hardware:
 
@@ -89,8 +89,8 @@ For Hardware:
 [Add any extra demo materials/links]
 
 ## Team Contributions
-- [Name 1]: [Specific contributions]
-- [Name 2]: [Specific contributions]
+- Sreya.S: Conceived the idea using Google gemini and wrote the functional HTML code and UI structure using claude.
+- Mounika.S: Wrote the functional HTML code and UI structure using claude and used Git & GitHub for code implementation tracking and deployment.
 - [Name 3]: [Specific contributions]
 
 ---
